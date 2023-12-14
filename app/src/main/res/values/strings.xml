@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Zadacha.kg</string>
+    <string name="zadachi">Задачи</string>
+    <string name="this_is_task_1">This is Task 1</string>
+    <string name="title">Загаловок</string>
+    <string name="save">Сохранить</string>
+    <string name="desc">Описание</string>
+    <string name="no">Нету задач</string>
+</resources>
