@@ -19,16 +19,73 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <RadioGroup
+        android:id="@+id/rg_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview">
+
+        <RadioButton
+            android:id="@+id/rb_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/selector_radio"
+            android:button="@null"
+            android:checked="true"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="@string/фдд"
+            android:textColor="@drawable/selector_radio_text_color"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/rb_checked"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_radio"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="@string/у"
+            android:textColor="@drawable/selector_radio_text_color"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/rb_no_checked"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/selector_radio"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="@string/not"
+            android:textColor="@drawable/selector_radio_text_color"
+            android:textStyle="bold" />
+    </RadioGroup>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/textview"
+        app:layout_constraintTop_toBottomOf="@id/rg_sort"
         tools:listitem="@layout/task_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
+        android:contentDescription="@string/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"

@@ -6,4 +6,8 @@
     <string name="save">Сохранить</string>
     <string name="desc">Описание</string>
     <string name="no">Нету задач</string>
+    <string name="not">Не отмеченные</string>
+    <string name="у">Отмеченные</string>
+    <string name="фдд">Все</string>
+    <string name="image">image</string>
 </resources>
