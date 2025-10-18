@@ -27,9 +27,12 @@ import lib.shug.taskapp.databinding.AddNewtaskBinding;
 
 public class AddNewTask extends BottomSheetDialogFragment {
 
-    private AddNewtaskBinding binding;
     public static final String TAG = "AddNewTask";
     private static final String ARG_ID = "arg_number";
+
+    private EditText etTitle;
+    private EditText etDesc;
+    private Button btnSave;
 
     private DataBaseHelper dataBaseHelper;
 
@@ -47,7 +50,10 @@ public class AddNewTask extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_newtask, container, false);
-        binding = AddNewtaskBinding.inflate(getLayoutInflater());
+
+        etTitle = view.findViewById(R.id.et_title);
+        btnSave = view.findViewById(R.id.btn_save);
+        etDesc = view.findViewById(R.id.et_desc);
 
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -76,17 +82,17 @@ public class AddNewTask extends BottomSheetDialogFragment {
                 taskId = idArg;
                 TaskModel task = getTaskById(taskId);
                 if (task != null) {
-                    binding.etTitle.setText(task.getTask());
-                    binding.etDesc.setText(task.getDescription());
+                    etTitle.setText(task.getTask());
+                    etDesc.setText(task.getDescription());
                 }
             }
         }
 
         final Integer finalTaskId = taskId;
 
-        binding.btnSave.setOnClickListener(v -> {
-            String title = binding.etTitle.getText().toString().trim();
-            String desc = binding.etDesc.getText().toString().trim();
+        btnSave.setOnClickListener(v -> {
+            String title = etTitle.getText().toString().trim();
+            String desc = etDesc.getText().toString().trim();
 
             if (!title.isEmpty() || !desc.isEmpty()) {
                 if (finalTaskId == null) {
