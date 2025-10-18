@@ -23,7 +23,6 @@ import lib.shug.taskapp.DataBase.DataBaseHelper;
 import lib.shug.taskapp.DataBase.Model.TaskModel;
 import lib.shug.taskapp.R;
 import lib.shug.taskapp.Utils.OnDialogCloseListener;
-import lib.shug.taskapp.databinding.AddNewtaskBinding;
 
 public class AddNewTask extends BottomSheetDialogFragment {
 
