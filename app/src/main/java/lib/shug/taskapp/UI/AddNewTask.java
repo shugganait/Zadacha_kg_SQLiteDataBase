@@ -23,15 +23,13 @@ import lib.shug.taskapp.DataBase.DataBaseHelper;
 import lib.shug.taskapp.DataBase.Model.TaskModel;
 import lib.shug.taskapp.R;
 import lib.shug.taskapp.Utils.OnDialogCloseListener;
+import lib.shug.taskapp.databinding.AddNewtaskBinding;
 
 public class AddNewTask extends BottomSheetDialogFragment {
 
+    private AddNewtaskBinding binding;
     public static final String TAG = "AddNewTask";
     private static final String ARG_ID = "arg_number";
-
-    private EditText etTask;
-    private EditText etDesc;
-    private Button btnSave;
 
     private DataBaseHelper dataBaseHelper;
 
@@ -49,6 +47,7 @@ public class AddNewTask extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_newtask, container, false);
+        binding = AddNewtaskBinding.inflate(getLayoutInflater());
 
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -68,10 +67,6 @@ public class AddNewTask extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        etTask = view.findViewById(R.id.et_title);
-        etDesc = view.findViewById(R.id.et_desc);
-        btnSave = view.findViewById(R.id.btn_save);
-
         dataBaseHelper = new DataBaseHelper(getActivity());
 
         Integer taskId = null;
@@ -81,17 +76,17 @@ public class AddNewTask extends BottomSheetDialogFragment {
                 taskId = idArg;
                 TaskModel task = getTaskById(taskId);
                 if (task != null) {
-                    etTask.setText(task.getTask());
-                    etDesc.setText(task.getDescription());
+                    binding.etTitle.setText(task.getTask());
+                    binding.etDesc.setText(task.getDescription());
                 }
             }
         }
 
         final Integer finalTaskId = taskId;
 
-        btnSave.setOnClickListener(v -> {
-            String title = etTask.getText().toString().trim();
-            String desc = etDesc.getText().toString().trim();
+        binding.btnSave.setOnClickListener(v -> {
+            String title = binding.etTitle.getText().toString().trim();
+            String desc = binding.etDesc.getText().toString().trim();
 
             if (!title.isEmpty() || !desc.isEmpty()) {
                 if (finalTaskId == null) {

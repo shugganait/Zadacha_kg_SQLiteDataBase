@@ -21,16 +21,15 @@ import lib.shug.taskapp.DataBase.Model.TaskModel;
 import lib.shug.taskapp.R;
 import lib.shug.taskapp.UI.Adapter.TaskAdapter;
 import lib.shug.taskapp.Utils.OnDialogCloseListener;
+import lib.shug.taskapp.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements OnDialogCloseListener {
 
-    private RecyclerView recyclerview;
+    private ActivityMainBinding binding;
     private FloatingActionButton addFab;
     private DataBaseHelper dataBaseHelper;
     private List<TaskModel> modelList;
     private TaskAdapter adapter;
-    private RadioGroup rgSort;
-    private TextView tvNo;
 
     private enum Filter {ALL, CHECKED, UNCHECKED}
 
@@ -39,17 +38,13 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        rgSort = findViewById(R.id.rg_sort);
-        recyclerview = findViewById(R.id.recyclerview);
-        addFab = findViewById(R.id.fab);
-        tvNo = findViewById(R.id.tv_no);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         dataBaseHelper = new DataBaseHelper(this);
         modelList = new ArrayList<>();
         adapter = new TaskAdapter();
-        recyclerview.setAdapter(adapter);
+        binding.recyclerview.setAdapter(adapter);
 
         adapter.setOnTaskClickListener(new TaskAdapter.OnTaskClickListener() {
             @Override
@@ -79,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     }
 
     private void setupListeners() {
-        rgSort.setOnCheckedChangeListener((group, checkedId) -> {
+        binding.rgSort.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.rb_all) {
                 currentFilter = Filter.ALL;
             } else if (checkedId == R.id.rb_checked) {
@@ -112,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
                 filtered = new ArrayList<>(modelList);
         }
 
-        tvNo.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.tvNo.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
         adapter.submitList(filtered); // плавная анимация с ListAdapter
     }
 
