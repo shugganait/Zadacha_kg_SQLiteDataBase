@@ -26,7 +26,6 @@ import lib.shug.taskapp.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity implements OnDialogCloseListener {
 
     private ActivityMainBinding binding;
-    private FloatingActionButton addFab;
     private DataBaseHelper dataBaseHelper;
     private List<TaskModel> modelList;
     private TaskAdapter adapter;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             applyFilter();
         });
 
-        addFab.setOnClickListener(v -> {
+        binding.fab.setOnClickListener(v -> {
             AddNewTask.newInstance(null).show(getSupportFragmentManager(), AddNewTask.TAG);
         });
     }
