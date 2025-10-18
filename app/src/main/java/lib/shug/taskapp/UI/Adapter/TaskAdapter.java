@@ -19,6 +19,7 @@ public class TaskAdapter extends ListAdapter<TaskModel, TaskAdapter.ViewHolder> 
     public interface OnTaskClickListener {
         void onItemClick(TaskModel task, boolean isChecked);
         void onItemLongClick(TaskModel task);
+        void onItemEditClick(TaskModel task);
     }
 
     private OnTaskClickListener listener;
@@ -64,6 +65,10 @@ public class TaskAdapter extends ListAdapter<TaskModel, TaskAdapter.ViewHolder> 
 
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (listener != null) listener.onItemClick(task, isChecked);
+        });
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onItemEditClick(task);
         });
 
         holder.itemView.setOnLongClickListener(v -> {

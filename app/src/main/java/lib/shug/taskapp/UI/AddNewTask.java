@@ -27,6 +27,7 @@ import lib.shug.taskapp.Utils.OnDialogCloseListener;
 public class AddNewTask extends BottomSheetDialogFragment {
 
     public static final String TAG = "AddNewTask";
+    private static final String ARG_ID = "arg_number";
 
     private EditText etTask;
     private EditText etDesc;
@@ -34,17 +35,21 @@ public class AddNewTask extends BottomSheetDialogFragment {
 
     private DataBaseHelper dataBaseHelper;
 
-    public static AddNewTask newInstance() {
-        return new AddNewTask();
+    public static AddNewTask newInstance(@Nullable Integer taskId) {
+        AddNewTask fragment = new AddNewTask();
+        if (taskId != null) {
+            Bundle args = new Bundle();
+            args.putInt(ARG_ID, taskId);
+            fragment.setArguments(args);
+        }
+        return fragment;
     }
-
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.add_newtask, container, false);
 
-        // Регулируем размер
         if (getDialog() != null && getDialog().getWindow() != null) {
             getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
             getDialog().setOnShowListener(dialog -> {
@@ -64,26 +69,54 @@ public class AddNewTask extends BottomSheetDialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         etTask = view.findViewById(R.id.et_title);
-        btnSave = view.findViewById(R.id.btn_save);
         etDesc = view.findViewById(R.id.et_desc);
+        btnSave = view.findViewById(R.id.btn_save);
 
         dataBaseHelper = new DataBaseHelper(getActivity());
 
-        btnSave.setOnClickListener(v -> {
-            if (!etTask.getText().toString().equals("") || !etDesc.getText().toString().equals("")) {
-                String title = etTask.getText().toString();
-                String desc = etDesc.getText().toString();
+        Integer taskId = null;
+        if (getArguments() != null) {
+            int idArg = getArguments().getInt(ARG_ID, -1);
+            if (idArg != -1) {
+                taskId = idArg;
+                TaskModel task = getTaskById(taskId);
+                if (task != null) {
+                    etTask.setText(task.getTask());
+                    etDesc.setText(task.getDescription());
+                }
+            }
+        }
 
-                TaskModel item = new TaskModel();
-                item.setTask(title);
-                item.setDescription(desc);
-                item.setStatus(0);
-                dataBaseHelper.insertTask(item);
+        final Integer finalTaskId = taskId;
+
+        btnSave.setOnClickListener(v -> {
+            String title = etTask.getText().toString().trim();
+            String desc = etDesc.getText().toString().trim();
+
+            if (!title.isEmpty() || !desc.isEmpty()) {
+                if (finalTaskId == null) {
+                    TaskModel item = new TaskModel();
+                    item.setTask(title);
+                    item.setDescription(desc);
+                    item.setStatus(0);
+                    dataBaseHelper.insertTask(item);
+                } else {
+                    dataBaseHelper.updateTask(finalTaskId, title, desc);
+                }
                 dismiss();
             } else {
                 Toast.makeText(requireContext(), "Нельзя сохранить пустую задачу", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private TaskModel getTaskById(int id) {
+        for (TaskModel task : dataBaseHelper.getAllTasks()) {
+            if (task.getId() == id) {
+                return task;
+            }
+        }
+        return null;
     }
 
     @Override

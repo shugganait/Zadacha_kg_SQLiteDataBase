@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     private RadioGroup rgSort;
     private TextView tvNo;
 
-    private enum Filter { ALL, CHECKED, UNCHECKED }
+    private enum Filter {ALL, CHECKED, UNCHECKED}
 
     private Filter currentFilter = Filter.ALL;
 
@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
                 applyFilter();
                 Toast.makeText(MainActivity.this, "Задача удалена", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onItemEditClick(TaskModel task) {
+                AddNewTask.newInstance(task.getId()).show(getSupportFragmentManager(), AddNewTask.TAG);
+            }
         });
 
         setupListeners();
@@ -85,9 +90,9 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             applyFilter();
         });
 
-        addFab.setOnClickListener(v ->
-                AddNewTask.newInstance().show(getSupportFragmentManager(), AddNewTask.TAG)
-        );
+        addFab.setOnClickListener(v -> {
+            AddNewTask.newInstance(null).show(getSupportFragmentManager(), AddNewTask.TAG);
+        });
     }
 
     private void loadAdapter() {
