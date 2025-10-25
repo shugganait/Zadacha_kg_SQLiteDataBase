@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -95,6 +96,48 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
+        return modelList;
+    }
+
+    public List<TaskModel> searchTasks(String query) {
+        db = this.getReadableDatabase();
+        List<TaskModel> modelList = new ArrayList<>();
+
+        // Проверяем, что строка не null и не пустая
+        if (query == null || query.trim().isEmpty()) {
+            return getAllTasks(); // возвращаем все, если ничего не введено
+        }
+
+        Cursor cursor = null;
+        try {
+            // LIKE с подстановкой %
+            cursor = db.query(
+                    TABLE_NAME,
+                    null,
+                    COL_2 + " LIKE ?",
+                    new String[]{"%" + query.trim() + "%"},
+                    null,
+                    null,
+                    null
+            );
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    TaskModel task = new TaskModel();
+                    task.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COL_1)));
+                    task.setTask(cursor.getString(cursor.getColumnIndexOrThrow(COL_2)));
+                    task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COL_3)));
+                    task.setStatus(cursor.getInt(cursor.getColumnIndexOrThrow(COL_4)));
+                    modelList.add(task);
+                } while (cursor.moveToNext());
+            }
+
+        } catch (Exception e) {
+            Log.e("DataBaseHelper", "Ошибка при поиске: " + e.getMessage());
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
         return modelList;
     }
 }

@@ -2,15 +2,13 @@ package lib.shug.taskapp.UI;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,14 +48,14 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             public void onItemClick(TaskModel task, boolean isChecked) {
                 dataBaseHelper.updateStatus(task.getId(), isChecked ? 1 : 0);
                 loadAdapter();
-                applyFilter();
+                applyFilterAndSearch(binding.etSearch.getText().toString());
             }
 
             @Override
             public void onItemLongClick(TaskModel task) {
                 dataBaseHelper.deleteTask(task.getId());
                 loadAdapter();
-                applyFilter();
+                applyFilterAndSearch(binding.etSearch.getText().toString());
                 Toast.makeText(MainActivity.this, "Задача удалена", Toast.LENGTH_SHORT).show();
             }
 
@@ -69,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
         setupListeners();
         loadAdapter();
-        applyFilter();
+        applyFilterAndSearch(binding.etSearch.getText().toString());
     }
 
     private void setupListeners() {
@@ -81,11 +79,26 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
             } else if (checkedId == R.id.rb_no_checked) {
                 currentFilter = Filter.UNCHECKED;
             }
-            applyFilter();
+            applyFilterAndSearch(binding.etSearch.getText().toString());
         });
 
         binding.fab.setOnClickListener(v -> {
             AddNewTask.newInstance(null).show(getSupportFragmentManager(), AddNewTask.TAG);
+        });
+
+        binding.etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                applyFilterAndSearch(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 
@@ -93,26 +106,64 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         modelList = dataBaseHelper.getAllTasks();
     }
 
-    private void applyFilter() {
-        List<TaskModel> filtered;
-        switch (currentFilter) {
-            case CHECKED:
-                filtered = modelList.stream().filter(t -> t.getStatus() == 1).collect(Collectors.toList());
-                break;
-            case UNCHECKED:
-                filtered = modelList.stream().filter(t -> t.getStatus() == 0).collect(Collectors.toList());
-                break;
-            default:
-                filtered = new ArrayList<>(modelList);
-        }
+//    private void applyFilter() {
+//        List<TaskModel> filtered;
+//        switch (currentFilter) {
+//            case CHECKED:
+//                filtered = modelList.stream().filter(t -> t.getStatus() == 1).collect(Collectors.toList());
+//                break;
+//            case UNCHECKED:
+//                filtered = modelList.stream().filter(t -> t.getStatus() == 0).collect(Collectors.toList());
+//                break;
+//            default:
+//                filtered = new ArrayList<>(modelList);
+//        }
+//
+//        binding.tvNo.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+//        adapter.submitList(filtered);
+//    }
 
-        binding.tvNo.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
-        adapter.submitList(filtered); // плавная анимация с ListAdapter
+    private void applyFilterAndSearch(String query) {
+        List<TaskModel> baseList;
+
+        try {
+            // Если пользователь что-то ищет — получаем отфильтрованный список
+            if (query != null && !query.trim().isEmpty()) {
+                baseList = dataBaseHelper.searchTasks(query);
+            } else {
+                baseList = dataBaseHelper.getAllTasks();
+            }
+
+            // Применяем фильтр по статусу
+            List<TaskModel> filtered;
+            switch (currentFilter) {
+                case CHECKED:
+                    filtered = baseList.stream()
+                            .filter(t -> t.getStatus() == 1)
+                            .collect(Collectors.toList());
+                    break;
+                case UNCHECKED:
+                    filtered = baseList.stream()
+                            .filter(t -> t.getStatus() == 0)
+                            .collect(Collectors.toList());
+                    break;
+                default:
+                    filtered = new ArrayList<>(baseList);
+            }
+
+            binding.tvNo.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+            adapter.submitList(filtered);
+
+        } catch (Exception e) {
+            Log.e("MainActivity", "Ошибка при применении фильтра или поиска: " + e.getMessage());
+            Toast.makeText(this, "Произошла ошибка при поиске", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     @Override
     public void onDialogClose(DialogInterface dialogInterface) {
         loadAdapter();
-        applyFilter();
+        applyFilterAndSearch(binding.etSearch.getText().toString());
     }
 }
